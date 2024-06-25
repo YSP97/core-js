@@ -1,4 +1,4 @@
-const ENDPOINT = 'https://jsonplaceholder.typicode.com/users';
+const ENDPOINT = 'https://jsonplaceholder.typicode.com/users/3';
 
 //  [readyState]
 // 0 : uninitialized
@@ -19,8 +19,8 @@ function xhr({
   method = 'GET',
   url = '',
   body = null,
-  성공 = null,
-  실패 = null,
+  onSuccess = null,
+  onFail = null,
   headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -41,9 +41,9 @@ function xhr({
       if (status >= 200 && status < 400) {
         const data = JSON.parse(response); // 문자열을 js 객체로 변환
 
-        성공(data); // ???
+        onSuccess(data);
       } else {
-        실패('실패!');
+        onFail('실패하셨슴다');
       }
     }
   });
@@ -55,43 +55,43 @@ function xhr({
 // 2. 매개변수 안쓰면? ✅
 
 // xhr({
-//   성공(data) {
+//   onSuccess(data) {
 //     console.log(data);
 //   },
-//   실패() {},
+//   onFail(err) {console.log(err)},
 //   url: ENDPOINT,
 // });
 
-xhr.get = (url, 성공, 실패) => {
-  xhr({ url, 성공, 실패 });
+xhr.get = (url, onSuccess, onFail) => {
+  xhr({ url, onSuccess, onFail });
 };
 
-xhr.post = (url, body, 성공, 실패) => {
+xhr.post = (url, body, onSuccess, onFail) => {
   xhr({
     method: 'POST',
     body,
     url,
-    성공,
-    실패,
+    onSuccess,
+    onFail,
   });
 };
 
-xhr.put = (url, body, 성공, 실패) => {
+xhr.put = (url, body, onSuccess, onFail) => {
   xhr({
     method: 'PUT',
     body,
     url,
-    성공,
-    실패,
+    onSuccess,
+    onFail,
   });
 };
 
-xhr.delete = (url, 성공, 실패) => {
+xhr.delete = (url, onSuccess, onFail) => {
   xhr({
     method: 'DELETE',
     url,
-    성공,
-    실패,
+    onSuccess,
+    onFail,
   });
 };
 
@@ -128,8 +128,7 @@ xhr.delete = (url, 성공, 실패) => {
 //   }
 // );
 
-// 외않되..?
-// 아마 서버 삭제는 우리가 할 수없게 서버쪽에서 설정해놨을거라구 그랬음...
+// 외않되..? -> 아마 우리가 테스트 API를 맘대로 삭제하는 걸 막으려고 그런듯...
 // xhr.delete(
 //   ENDPOINT,
 //   (data) => {
