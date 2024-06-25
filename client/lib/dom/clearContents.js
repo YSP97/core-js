@@ -1,7 +1,7 @@
 import { getNode } from './getNode.js';
 import { isString } from '../utils/type.js';
 
-function clearContents(node) {
+export default function clearContents(node) {
   if (isString(node)) node = getNode(node);
 
   if (node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA') {
@@ -11,5 +11,3 @@ function clearContents(node) {
 
   node.textContent = '';
 }
-
-export default clearContents;
