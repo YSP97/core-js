@@ -1,76 +1,40 @@
-import data from './data/data.js';
-import clearContents from './lib/dom/clearContents.js';
+/* global gsap */
 
-import {
-  shake,
-  getNode,
-  addClass,
-  showAlert,
-  getRandom,
-  insertLast,
-  removeClass,
-  isNumericString,
-  copy
-} from './lib/index.js';
+import { attr } from '../dom/attr.js';
+import { getNode } from '../dom/getNode.js';
 
-// [phase-1]
-// 1. 주접 떨기 버튼을 클릭 하는 함수
-//    - 주접 떨기 버튼 가져오기
-//    - 이벤트 연결하기 addEventListener('click')
+const cube = getNode('#cube');
 
-// 2. input 값 가져오기
-//    - input.value
+let random;
+gsap.to(cube, {
+  duration: 1,
+  rotationX: 100,
+  rotationY: -100,
+  ease: 'back(10)',
+});
 
-// 3. data함수에서 주접 1개 꺼내기
-//    - data(name)
-//    - getRandom()
+export function diceAnimation() {
+  random = gsap.utils.random([0, 1, 2, 3, 4, 5]);
 
-// 4. pick 항목 랜더링하기
-
-// [phase-2]
-// 1. 아무 값도 입력 받지 못했을 때 예외처리 (콘솔 출력)
-
-const submit = getNode('#submit');
-const nameField = getNode('#nameField');
-const result = getNode('.result');
-
-function handleSubmit(e) {
-  e.preventDefault();
-
-  const name = nameField.value;
-  const list = data(name);
-  const pick = list[getRandom(list.length)];
-
-  if (!name || name.replace(/\s*/g, '') === '') {
-    showAlert('.alert-error', '공백은 허용하지 않습니다.');
-
-    shake('#nameField').restart();
-
-    return;
+  function complete() {
+    attr(cube, 'dice', random + 1);
   }
 
-  if (!isNumericString(name)) {
-    showAlert('.alert-error', '제대로된 이름을 입력해 주세요.');
+  const rotationValue = [
+    [0, 0], // 1
+    [0, -90], // 2
+    [-90, 0], // 3
+    [90, 0], // 4
+    [0, 90], // 5
+    [-180, 0], // 6
+  ];
 
-    shake('#nameField').restart();
-
-    return;
-  }
-
-  clearContents(result);
-  insertLast(result, pick);
+  gsap.to(cube, {
+    ease: 'linear',
+    duration: 0.2,
+    z: -100,
+    rotationX: rotationValue[random][0],
+    rotationY: rotationValue[random][1],
+    onComplete: complete,
+  });
 }
-
-function handleCopy() {
-  const text = result.textContent;
-
-  if (nameField.value) {
-    // 웹브라우저가 텍스트를 받지 못하 경우 promise를 반환하니까 then으로 showAlert 실행
-    copy(text).then(() => {
-      showAlert('.alert-success', '클립보드 복사 완료!');
-    });
-  }
-}
-
-submit.addEventListener('click', handleSubmit);
-result.addEventListener('click', handleCopy);
