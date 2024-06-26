@@ -1,143 +1,81 @@
-const ENDPOINT = 'https://jsonplaceholder.typicode.com/users/3';
+/* -------------------------------------------- */
+/*               xhr Promise 방식               */
+/* -------------------------------------------- */
 
-//  [readyState]
-// 0 : uninitialized
-// 1 : loading
-// 2 : loaded
-// 3 : interactive
-// 4 : complete   => onSuccess / onFail
-
-const user = {
-  name: '박윤선',
-  age: 18,
-  gender: 'female',
-};
-
-// 객체 합성
-
-function xhr({
-  method = 'GET',
-  url = '',
-  body = null,
-  onSuccess = null,
-  onFail = null,
-  headers = {
+const defaultOptions = {
+  method: 'GET',
+  url: '',
+  body: null,
+  errorMessage: '서버와의 통신이 원활하지 않습니다.',
+  headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-  }, // 구조분해 할당 => 순서 상관 없음 지존이다.
-}) {
+  },
+};
+
+// enumerable => 열거 가능한 => for..of/ for..in
+// iterable   => 순환 가능한 => for..of
+// immutable  => 불변의
+
+// const arr = [1,2,3];
+// const newArr = [...arr,4]
+
+export function xhrPromise(options) {
+  const { method, url, body, headers, errorMessage } = {
+    ...defaultOptions,
+    ...options,
+    headers: {
+      ...defaultOptions.headers,
+      ...options.headers,
+    },
+  };
+
   const xhr = new XMLHttpRequest();
 
-  xhr.open(method, url); // HTTP 요청을 초기화
+  xhr.open(method, url);
 
   Object.entries(headers).forEach(([key, value]) => {
     xhr.setRequestHeader(key, value);
-  }); // header 설정
-
-  xhr.addEventListener('readystatechange', () => {
-    const { readyState, status, response } = xhr;
-
-    if (readyState === 4) {
-      if (status >= 200 && status < 400) {
-        const data = JSON.parse(response); // 문자열을 js 객체로 변환
-
-        onSuccess(data);
-      } else {
-        onFail('실패하셨슴다');
-      }
-    }
   });
 
-  xhr.send(JSON.stringify(body)); // HTTP 요청을 서버로 전송
+  xhr.send(JSON.stringify(body));
+
+  return new Promise((resolve, reject) => {
+    xhr.addEventListener('readystatechange', () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status >= 200 && xhr.status < 400) {
+          resolve(JSON.parse(xhr.response));
+        } else {
+          reject({ message: errorMessage });
+        }
+      }
+    });
+  });
 }
 
-// 1. 무조건 매개변수 순서에 맞게 작성 ✅
-// 2. 매개변수 안쓰면? ✅
-
-// xhr({
-//   onSuccess(data) {
-//     console.log(data);
-//   },
-//   onFail(err) {console.log(err)},
-//   url: ENDPOINT,
-// });
-
-xhr.get = (url, onSuccess, onFail) => {
-  xhr({ url, onSuccess, onFail });
+xhrPromise.get = (url) => {
+  return xhrPromise({ url });
 };
 
-xhr.post = (url, body, onSuccess, onFail) => {
-  xhr({
+xhrPromise.post = (url, body) => {
+  return xhrPromise({
+    url,
+    body,
     method: 'POST',
-    body,
-    url,
-    onSuccess,
-    onFail,
   });
 };
 
-xhr.put = (url, body, onSuccess, onFail) => {
-  xhr({
+xhrPromise.put = (url, body) => {
+  return xhrPromise({
+    url,
+    body,
     method: 'PUT',
-    body,
-    url,
-    onSuccess,
-    onFail,
   });
 };
 
-xhr.delete = (url, onSuccess, onFail) => {
-  xhr({
+xhrPromise.delete = (url) => {
+  return xhrPromise({
+    url,
     method: 'DELETE',
-    url,
-    onSuccess,
-    onFail,
   });
 };
-
-// 실행해보쟈
-// xhr.get(
-//   ENDPOINT,
-//   (data) => {
-//     console.log(data);
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-// xhr.post(
-//   ENDPOINT,
-//   user,
-//   (data) => {
-//     console.log(data);
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-// xhr.put(
-//   ENDPOINT,
-//   user,
-//   (data) => {
-//     console.log(data);
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-// 외않되..? -> 아마 우리가 테스트 API를 맘대로 삭제하는 걸 막으려고 그런듯...
-// xhr.delete(
-//   ENDPOINT,
-//   (data) => {
-//     console.log(data);
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-/* xhr promise 방식 */
-// xhr.port(ENDPOINT).then(() => {});
