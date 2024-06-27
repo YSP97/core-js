@@ -125,7 +125,7 @@ async function 라면끓이기() {
 // 라면끓이기()
 
 async function getData() {
-  const data = await xhrPromise.get('https://pokeapi.co/api/v2/pokemon/172');
+  const data = await xhrPromise.get('https://pokeapi.co/api/v2/pokemon/39');
 
   console.log();
 
@@ -135,4 +135,4 @@ async function getData() {
   );
 }
 
-// getData()
+getData();

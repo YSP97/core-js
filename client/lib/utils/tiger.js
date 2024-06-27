@@ -24,7 +24,7 @@ export const tiger = async (options) => {
 
   // console.log(await response.json());
 
-  if (response.ok) {
+  if (response.ok) { // http 상태 코드가 200번대일때(요청이 성공적)
     // response와 status가 합쳐진 느낌의 프로퍼티...boolean값임
     response.data = await response.json(); // 문자 <-> 객체 변환 알아서 해줌
   }
