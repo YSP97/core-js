@@ -10,7 +10,7 @@ const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-  },
+  }, // xhr은 오래된 거라 header가 추가되면 서버에서 막는다고 함....뭔소리지
 };
 
 // enumerable => 열거 가능한 => for..of/ for..in

@@ -1,28 +1,15 @@
-import { getNode } from "./getNode.js";
-import { isString } from "../utils/type.js";
+import { getNode } from './getNode.js';
+import { isString } from '../utils/type.js';
 
+function clearContents(node) {
+  if (isString(node)) node = getNode(node);
 
-
-
-
- function clearContents(node){
-
-  if(isString(node)) node = getNode(node);
-
-  if(node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA') {
-    node.value = ''
+  if (node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA') {
+    node.value = '';
     return;
   }
 
-  node.textContent = ''
-  
+  node.textContent = '';
 }
 
-export default clearContents
-
-
-
-
-
-
-
+export default clearContents;
